@@ -1,16 +1,9 @@
-import { RepeatIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Button,
-  ButtonGroup,
-  Center,
-  Container,
+  Button, Container,
   FormControl,
   FormLabel,
-  Heading,
-  HStack,
-  IconButton,
-  Input,
+  Heading, Input,
   Link,
   Modal,
   ModalBody,
@@ -18,26 +11,14 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverFooter,
-  PopoverHeader,
-  PopoverTrigger,
-  SimpleGrid,
+  ModalOverlay, SimpleGrid,
   useColorModeValue,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { ColorModeSwitcher } from "../components/dark-mode";
 
 export default function Home() {
-
-  const urlLink = 'https://raw.githubusercontent.com/fernandobelotto/links/master/index.json'
-
   const [links, setLinks] = useState<any>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -48,57 +29,48 @@ export default function Home() {
     setLinks(getLinksLocalstorage());
   }, []);
 
-  const inputUrl = useRef<any>(null)
-  const inputName = useRef<any>(null)
-  
-  const addLink = () => {
-    const href = inputUrl?.current?.value
-    const title = inputName?.current?.value
-    const id = Math.random().toString(36).substr(2, 9)
-    const newLinks = [...links, { href, title, id }]
-    setLinks(newLinks)
-    window.localStorage.setItem("links", JSON.stringify(newLinks));
-    onClose()
-  }
+  const inputUrl = useRef<any>(null);
+  const inputName = useRef<any>(null);
 
-  const getLinks = () => {
-    fetch(urlLink)
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        setLinks(res);
-        window.localStorage.setItem("links", JSON.stringify(res));
-      });
+  const addLink = () => {
+    const href = inputUrl?.current?.value;
+    const title = inputName?.current?.value;
+    const id = Math.random().toString(36).substr(2, 9);
+    const newLinks = [...links, { href, title, id }];
+    setLinks(newLinks);
+    window.localStorage.setItem("links", JSON.stringify(newLinks));
+    onClose();
   };
 
   const deleteLink = (id: string) => {
     const newLinks = links.filter((link: any) => link.id !== id);
-    setLinks(newLinks)
+    setLinks(newLinks);
     window.localStorage.setItem("links", JSON.stringify(newLinks));
-  }
+  };
 
   return (
     <>
       <ColorModeSwitcher />
       <Box minH="100vh">
         <Container maxW="container.lg">
-          <HStack w="100%" justifyContent="space-between">
-            <Heading pt={10} mb={5}>
-              Homepage
-            </Heading>
-            <IconButton
-              size="sm"
-              icon={<RepeatIcon />}
-              aria-label="refresh"
-              onClick={getLinks}
-            />
-          </HStack>
-          <SimpleGrid minChildWidth={120} spacing={3}>
+          <Heading
+            pt={10}
+            mb={5}
+          >
+            Homepage
+          </Heading>
+          <SimpleGrid
+            minChildWidth={120}
+            spacing={3}
+          >
             {links.map((link: any) => {
               return (
                 <Link href={link.href}>
                   <Box
-                    onContextMenu={(e) => {e.preventDefault(); deleteLink(link.id)}}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      deleteLink(link.id);
+                    }}
                     padding={2}
                     borderWidth={2}
                     rounded="md"
@@ -126,7 +98,10 @@ export default function Home() {
         </Container>
       </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Add new link</ModalHeader>
@@ -134,23 +109,33 @@ export default function Home() {
           <ModalBody pb={6}>
             <FormControl>
               <FormLabel>Name</FormLabel>
-              <Input ref={inputName} placeholder="My Link" />
+              <Input
+                ref={inputName}
+                placeholder="My Link"
+              />
             </FormControl>
 
             <FormControl mt={4}>
               <FormLabel>Link</FormLabel>
-              <Input ref={inputUrl} placeholder="https://my-link.com" />
+              <Input
+                ref={inputUrl}
+                placeholder="https://my-link.com"
+              />
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={addLink}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={addLink}
+            >
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-        </>
+    </>
   );
 }
