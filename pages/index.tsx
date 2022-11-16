@@ -1,22 +1,32 @@
+import fileDownload from "js-file-download";
 import {
   Box,
-  Button, Container,
+  Button,
+  Container,
   FormControl,
   FormLabel,
-  Heading, Input,
+  Heading,
+  IconButton,
+  Input,
   Link,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay, SimpleGrid,
+  ModalOverlay,
+  SimpleGrid,
   useColorModeValue,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { ColorModeSwitcher } from "../components/dark-mode";
+import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
 
 export default function Home() {
   const [links, setLinks] = useState<any>([]);
@@ -48,54 +58,71 @@ export default function Home() {
     window.localStorage.setItem("links", JSON.stringify(newLinks));
   };
 
+  const exportConfig = () => {
+    fileDownload(JSON.stringify(links), "links.json");
+  };
+
   return (
     <>
-      <ColorModeSwitcher />
-      <Box minH="100vh">
-        <Container maxW="container.lg">
-          <Heading
-            pt={10}
-            mb={5}
-          >
-            Homepage
-          </Heading>
-          <SimpleGrid
-            minChildWidth={120}
-            spacing={3}
-          >
-            {links.map((link: any) => {
-              return (
-                <Link href={link.href}>
-                  <Box
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      deleteLink(link.id);
-                    }}
-                    padding={2}
-                    borderWidth={2}
-                    rounded="md"
-                    textAlign="center"
-                    noOfLines={1}
-                  >
-                    {link.title}
-                  </Box>
-                </Link>
-              );
-            })}
-            <Box
-              padding={2}
-              borderWidth={2}
-              rounded="md"
-              bg={useColorModeValue("gray.200", "gray.500")}
-              textAlign="center"
-              noOfLines={1}
-              cursor="pointer"
-              onClick={onOpen}
+      <Box p={5}>
+        <Menu>
+          <MenuButton
+            size="sm"
+            as={IconButton}
+            icon={<HamburgerIcon />}
+          ></MenuButton>
+          <MenuList>
+            <MenuItem onClick={exportConfig}>export config</MenuItem>
+            <MenuItem onClick={() => null}>import config</MenuItem>
+          </MenuList>
+        </Menu>
+        <ColorModeSwitcher />
+        <Box minH="100vh">
+          <Container maxW="container.lg">
+            <Heading
+              pt={10}
+              mb={5}
             >
-              new link +
-            </Box>
-          </SimpleGrid>
-        </Container>
+              Homepage
+            </Heading>
+            <SimpleGrid
+              minChildWidth={120}
+              spacing={3}
+            >
+              {links.map((link: any) => {
+                return (
+                  <Link href={link.href}>
+                    <Box
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        deleteLink(link.id);
+                      }}
+                      padding={2}
+                      borderWidth={2}
+                      rounded="md"
+                      textAlign="center"
+                      noOfLines={1}
+                    >
+                      {link.title}
+                    </Box>
+                  </Link>
+                );
+              })}
+              <Box
+                padding={2}
+                borderWidth={2}
+                rounded="md"
+                bg={useColorModeValue("gray.200", "gray.500")}
+                textAlign="center"
+                noOfLines={1}
+                cursor="pointer"
+                onClick={onOpen}
+              >
+                new link +
+              </Box>
+            </SimpleGrid>
+          </Container>
+        </Box>
       </Box>
 
       <Modal
