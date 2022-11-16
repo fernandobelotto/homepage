@@ -1,4 +1,4 @@
-import fileDownload from "js-file-download";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -24,13 +24,16 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
+import fileDownload from "js-file-download";
 import { useEffect, useRef, useState } from "react";
 import { ColorModeSwitcher } from "../components/dark-mode";
-import { ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import { FileInput } from "../components/file-input";
 
 export default function Home() {
   const [links, setLinks] = useState<any>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const fileInputRef = useRef<any>();
 
   useEffect(() => {
     const getLinksLocalstorage = () => {
@@ -48,14 +51,18 @@ export default function Home() {
     const id = Math.random().toString(36).substr(2, 9);
     const newLinks = [...links, { href, title, id }];
     setLinks(newLinks);
-    window.localStorage.setItem("links", JSON.stringify(newLinks));
+    saveLocalStorage(newLinks);
     onClose();
+  };
+
+  const saveLocalStorage = (links: any) => {
+    window.localStorage.setItem("links", JSON.stringify(links));
   };
 
   const deleteLink = (id: string) => {
     const newLinks = links.filter((link: any) => link.id !== id);
     setLinks(newLinks);
-    window.localStorage.setItem("links", JSON.stringify(newLinks));
+    saveLocalStorage(newLinks);
   };
 
   const exportConfig = () => {
@@ -64,6 +71,15 @@ export default function Home() {
 
   return (
     <>
+      <FileInput
+        ref={fileInputRef}
+        onChangeFile={(json) => {
+          if (json) {
+            setLinks(json);
+            saveLocalStorage(json);
+          }
+        }}
+      />
       <Box p={5}>
         <Menu>
           <MenuButton
@@ -73,7 +89,10 @@ export default function Home() {
           ></MenuButton>
           <MenuList>
             <MenuItem onClick={exportConfig}>export config</MenuItem>
-            <MenuItem onClick={() => null}>import config</MenuItem>
+
+            <MenuItem onClick={() => fileInputRef.current?.click()}>
+              import config
+            </MenuItem>
           </MenuList>
         </Menu>
         <ColorModeSwitcher />
@@ -85,6 +104,7 @@ export default function Home() {
             >
               Homepage
             </Heading>
+
             <SimpleGrid
               minChildWidth={120}
               spacing={3}
